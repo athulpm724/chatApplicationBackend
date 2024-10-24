@@ -1,7 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -13,7 +10,7 @@ import { loginUserDTO } from './dto/login-user.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly configService:ConfigService,
+    private readonly configService: ConfigService,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
@@ -39,32 +36,32 @@ export class AuthService {
     // else create user
 
     // password encryption
-    const encryptedPassword = await this.passwordEncryption(createUserDTO.password) ?? createUserDTO.password
-    createUserDTO.password=encryptedPassword
+    const encryptedPassword =
+      (await this.passwordEncryption(createUserDTO.password)) ?? createUserDTO.password;
+    createUserDTO.password = encryptedPassword;
     const newUser = await this.userRepo.create(createUserDTO);
     return await this.userRepo.save(newUser);
   }
 
   // USER LOGIN
-  async login(userLoginDTO:loginUserDTO){
-    
-    // const user=await this.userRepo.findOneBy({username : userLoginDTO.username, password : encryptedPassword})
+  async login(userLoginDTO: loginUserDTO) {
+    const user = await this.userRepo.findOneBy({
+      username: userLoginDTO.username,
+      password: encryptedPassword,
+    });
   }
 
-  passwordVerifier(password: string):boolean {
+  passwordVerifier(password: string): boolean {
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordRegex.test(password);
   }
 
-  async passwordEncryption(password:string):Promise<string> {
-    const saltRound=parseInt(this.configService.get<string>('SALT_ROUND'))
-    const encryptedPassword = await bcrypt.hash(password,saltRound)
-    return encryptedPassword
+  async passwordEncryption(password: string): Promise<string> {
+    const saltRound = parseInt(this.configService.get<string>('SALT_ROUND'));
+    const encryptedPassword = await bcrypt.hash(password, saltRound);
+    return encryptedPassword;
   }
 
   // ========================================================================================================
-
-  
-
 }

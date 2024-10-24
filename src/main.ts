@@ -20,6 +20,9 @@ async function bootstrap() {
 
   const port = configService.get<string>('PORT');
   await app.listen(port);
-  Logger.warn('\n========================================================\n   PORT : '+port)
+  Logger.warn(
+    '\n========================================================\n   PORT : ' +
+      port,
+  );
 }
 bootstrap();
