@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { createUserDTO } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { loginUserDTO } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,9 +18,8 @@ export class AuthService {
   ) {}
 
   // USER MODULE
-
-  // USER CREATION
   // ========================================================================================================
+  // USER CREATION
   async create(createUserDTO: createUserDTO) {
     // password verification function
     // if (!this.passwordVerifier(createUserDTO.password)) {
@@ -45,6 +45,12 @@ export class AuthService {
     return await this.userRepo.save(newUser);
   }
 
+  // USER LOGIN
+  async login(userLoginDTO:loginUserDTO){
+    
+    // const user=await this.userRepo.findOneBy({username : userLoginDTO.username, password : encryptedPassword})
+  }
+
   passwordVerifier(password: string):boolean {
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -59,6 +65,6 @@ export class AuthService {
 
   // ========================================================================================================
 
-
+  
 
 }
