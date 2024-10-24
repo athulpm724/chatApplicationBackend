@@ -8,24 +8,27 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule.forRoot({
-        isGlobal:true,
-        envFilePath:".env"
-      }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      password: 'apm-password',
-      username: 'apm',
-      entities: [User],
-      database: 'chatApp',
-      synchronize: true,
-      // logging: true,
+      isGlobal: true,
+      envFilePath: '.env',
     }),
-    AuthModule
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        synchronize: true,
+        autoLoadEntities:true
+      }),
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService,ConfigService],
+  providers: [AppService, ConfigService],
 })
 export class AppModule {}
