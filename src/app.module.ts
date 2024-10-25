@@ -12,16 +12,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         isGlobal:true,
         envFilePath:".env"
       }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      password: 'apm-password',
-      username: 'apm',
-      entities: [User],
-      database: 'chatApp',
-      synchronize: true,
-      // logging: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USER'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB'),
+        autoLoadEntities: true,
+        synchronize: true,
+      }),
     }),
     AuthModule
   ],

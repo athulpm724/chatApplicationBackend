@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { createUserDTO } from './dto/create-user.dto';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -27,12 +28,6 @@ export class AuthService {
           )
 
           if(user)throw new ConflictException("email already exist")
-        
-        user = await this.userRepo.findOneBy(
-            { username: createUserDTO.username }  
-          )
-
-          if(user)throw new ConflictException("username already exist")
   
         // create code to update version number to file from .env
 
@@ -42,12 +37,15 @@ export class AuthService {
         
     }   
 
+
+    // REGEX PASSWORD VERIFICATION
     passwordVerifier(password:string){
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         return passwordRegex.test(password)
     }
 
-    passwordEncryption(){
-
+    // PASSWORD ENCRYPTION
+    passwordEncryption(password:string){
+        
     }
 }
