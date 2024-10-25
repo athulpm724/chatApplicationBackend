@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -27,12 +27,6 @@ export class AuthService {
 
     if (user) throw new ConflictException('email already exist');
 
-    user = await this.userRepo.findOneBy({ username: createUserDTO.username });
-
-    if (user) throw new ConflictException('username already exist');
-
-    // create code to update version number to file from .env
-
     // else create user
 
     // password encryption
@@ -44,11 +38,23 @@ export class AuthService {
   }
 
   // USER LOGIN
-  async login(userLoginDTO: loginUserDTO) {
+  async login(userLoginDTO: loginUserDTO) { 
     const user = await this.userRepo.findOneBy({
-      username: userLoginDTO.username,
-      password: encryptedPassword,
+      email: userLoginDTO.email
     });
+
+    if(!user){
+      throw new HttpException('user does not exist',200 )
+    }
+
+    const passwordVerification=await this.passwordVerification(userLoginDTO.password,user.password)
+    console.log(passwordVerification)
+    if(passwordVerification){
+      return "login successFul"
+    }
+    else{
+      throw new UnauthorizedException("invalid password")
+    }
   }
 
   passwordVerifier(password: string): boolean {
@@ -61,6 +67,10 @@ export class AuthService {
     const saltRound = parseInt(this.configService.get<string>('SALT_ROUND'));
     const encryptedPassword = await bcrypt.hash(password, saltRound);
     return encryptedPassword;
+  }
+
+  async passwordVerification(password:string,encryptedPassword:string):Promise<Boolean>{
+    return await bcrypt.compare(password,encryptedPassword)
   }
 
   // ========================================================================================================
