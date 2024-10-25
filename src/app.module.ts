@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule.forRoot({
         isGlobal:true,
         envFilePath:".env"
@@ -29,6 +30,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     AuthModule
   ],
   controllers: [AppController],
-  providers: [AppService,ConfigService],
+  providers: [AppService, ConfigService],
 })
 export class AppModule {}
