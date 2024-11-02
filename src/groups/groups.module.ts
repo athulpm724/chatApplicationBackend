@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Group } from 'src/entities/group.entity';
 import { User } from 'src/entities/user.entity';
 import { GroupMember } from 'src/entities/group-member.entity';
+import { GroupsMemberController } from './group-member.controller';
 
 @Module({
   imports:[
@@ -15,6 +16,6 @@ import { GroupMember } from 'src/entities/group-member.entity';
     ])
   ],
   providers: [GroupsService],
-  controllers: [GroupsController]
+  controllers: [GroupsController,GroupsMemberController]
 })
 export class GroupsModule {}
