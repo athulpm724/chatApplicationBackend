@@ -1,6 +1,6 @@
 import { ConflictException, HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { createUserDTO } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -17,7 +17,7 @@ export class AuthService {
   // USER MODULE
   // ========================================================================================================
   // USER CREATION
-  async create(createUserDTO: createUserDTO) {
+  async create(createUserDTO: createUserDTO) { 
     // password verification function
     // if (!this.passwordVerifier(createUserDTO.password)) {
     //   throw new ConflictException('weak password');
@@ -39,16 +39,16 @@ export class AuthService {
 
   // USER LOGIN
   async login(userLoginDTO: loginUserDTO) { 
+
     const user = await this.userRepo.findOneBy({
       email: userLoginDTO.email
     });
 
     if(!user){
-      throw new HttpException('user does not exist',200 )
+      throw new HttpException('user does not exist',404 )
     }
 
     const passwordVerification=await this.passwordVerification(userLoginDTO.password,user.password)
-    console.log(passwordVerification)
     if(passwordVerification){
       return "login successFul"
     }
